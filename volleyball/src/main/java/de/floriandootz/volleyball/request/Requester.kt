@@ -78,24 +78,41 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         url: String,
         body: String?,
         forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>,
-        errorListener: Response.ErrorListener,
-        @RawRes rawFallbackRes: Int,
+        listener: Response.Listener<T>?,
+        errorListener: Response.ErrorListener?,
+        @RawRes rawFallbackRes: Int?,
         customParser: Parser<T>
     ) {
         Log.d(this.javaClass.simpleName, "Loading: $url")
-        if (!NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, url) && rawFallbackRes != -1) { // load fallback within apk
+        if (!NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, url) && rawFallbackRes != null) { // load fallback within apk
             val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, rawFallbackRes, customParser)
             Log.d(this.javaClass.simpleName, "Loaded apk-fallback!")
-            listener.onResponse(fallbackResponse)
+            listener?.onResponse(fallbackResponse)
         } else if (cachingIsActive && (!forceReloadIfOnline || !NetworkUtil.isNetworkAvailable(ctx)) && CachingUtil.cacheExists(ctx, url)) { // load from cache
             val cachedResponse: T? = CachingUtil.readCache(ctx, url, customParser)
             Log.d(this.javaClass.simpleName, "Loaded from cache!")
-            listener.onResponse(cachedResponse)
+            listener?.onResponse(cachedResponse)
         } else { // load from API
             val request: Request<T> = Request(method, url, customParser, body, headers, listener, errorListener)
             requestQueue.add(request)
         }
+    }
+
+    public fun <T> build(url: String, parser: Parser<T>): RequestBuilder<T> {
+        return RequestBuilder(this, url, parser)
+    }
+
+    public fun <T> send(builder: RequestBuilder<T>) {
+        this.request(
+            builder.method,
+            builder.url,
+            builder.body,
+            builder.doReloadIfOnline,
+            builder.listener,
+            builder.errorListener,
+            builder.resId,
+            builder.parser
+        )
     }
 
     override fun onRequestFinished(volleyRequest: VolleyRequest<Any?>) {

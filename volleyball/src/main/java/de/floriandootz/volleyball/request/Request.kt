@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException
 class Request<T> : Request<T> {
 
     private val parser: Parser<T>
-    private val listener: Response.Listener<T>
+    private val listener: Response.Listener<T>?
     private val headers: Map<String, String>?
     private val body: String?
     private var responseJsonString: String? = null
@@ -22,8 +22,8 @@ class Request<T> : Request<T> {
         parser: Parser<T>,
         body: String?,
         headers: Map<String, String>?,
-        responseListener: Response.Listener<T>,
-        errorListener: Response.ErrorListener
+        responseListener: Response.Listener<T>?,
+        errorListener: Response.ErrorListener?
     ) : super(
         method,
         url,
@@ -45,7 +45,7 @@ class Request<T> : Request<T> {
     }
 
     public override fun deliverResponse(response: T) {
-        listener.onResponse(response)
+        listener?.onResponse(response)
     }
 
     override fun getHeaders(): Map<String, String> {

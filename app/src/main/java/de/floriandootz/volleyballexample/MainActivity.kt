@@ -16,6 +16,15 @@ class MainActivity : Activity(), Parser<String>, Response.Listener<String>, Resp
         setContentView(R.layout.activity_main)
 
         val requester = Requester(this, true, null, null)
+
+        requester
+            .build(
+                "https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap",
+                this)
+            .setListener(this)
+            .send()
+
+        /*
         requester.request(
             "https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap",
             this,
@@ -23,6 +32,7 @@ class MainActivity : Activity(), Parser<String>, Response.Listener<String>, Resp
             this,
             this
         )
+        */
     }
 
     override fun parse(jsonString: String, headers: Map<String, String>?): String {
