@@ -10,6 +10,7 @@ import com.android.volley.toolbox.Volley
 import de.floriandootz.volleyball.parse.Parser
 import de.floriandootz.volleyball.util.CachingUtil
 import de.floriandootz.volleyball.util.CachingUtil.writeCache
+import de.floriandootz.volleyball.util.LogUtil
 import de.floriandootz.volleyball.util.NetworkUtil
 import com.android.volley.Request as VolleyRequest
 
@@ -67,14 +68,14 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         @RawRes rawFallbackRes: Int?,
         customParser: Parser<T>
     ) {
-        Log.d(this.javaClass.simpleName, "Loading: $url")
+        LogUtil.v("Loading: $url")
         if (!NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, url) && rawFallbackRes != null) { // load fallback within apk
             val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, rawFallbackRes, customParser)
-            Log.d(this.javaClass.simpleName, "Loaded apk-fallback!")
+            LogUtil.d("Loaded raw-res-fallback: $url")
             listener?.onResponse(fallbackResponse)
         } else if (cachingIsActive && (!forceReloadIfOnline || !NetworkUtil.isNetworkAvailable(ctx)) && CachingUtil.cacheExists(ctx, url)) { // load from cache
             val cachedResponse: T? = CachingUtil.readCache(ctx, url, customParser)
-            Log.d(this.javaClass.simpleName, "Loaded from cache!")
+            LogUtil.d("Loaded from cache: $url")
             listener?.onResponse(cachedResponse)
         } else { // load from API
             val request: Request<T> = Request(method, url, customParser, body, headers, listener, errorListener)
@@ -86,15 +87,15 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         if (volleyRequest is Request) { // should always be true
             val request: Request<Any?> = volleyRequest as Request
             val responseJsonString: String? = request.getResponseJsonString()
-            //Log.d(this.getClass().getSimpleName(), "received: " + responseJsonString);
+            //LogUtil.v("received: " + responseJsonString);
             if (responseJsonString != null && !request.hasError()) {
-                Log.d(this.javaClass.simpleName, "Loaded: " + request.url)
+                LogUtil.d("Loaded: ${request.url}")
                 if (cachingIsActive) {
                     writeCache(ctx, responseJsonString, request.url)
                     //SharedPreferencesManager.writeFileTimestamp(ctx, request.getUrl(), System.currentTimeMillis());
                 }
             } else {
-                Log.d(this.javaClass.simpleName, "Loading failed: " + request.url)
+                LogUtil.w("Loading failed: ${request.url}")
                 // no connection, timeout, server offline etc...
                 // fake successful loading by providing cache if possible
                 if (cachingIsActive && CachingUtil.cacheExists(ctx, request.url)) {

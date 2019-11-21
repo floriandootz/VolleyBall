@@ -5,6 +5,7 @@ import com.android.volley.*
 import com.android.volley.Request
 import com.android.volley.toolbox.HttpHeaderParser
 import de.floriandootz.volleyball.parse.Parser
+import de.floriandootz.volleyball.util.LogUtil
 import java.io.UnsupportedEncodingException
 
 class Request<T> : Request<T> {
@@ -66,7 +67,7 @@ class Request<T> : Request<T> {
             try {
                 return body.toByteArray(charset(paramsEncoding))
             } catch (e: UnsupportedEncodingException) {
-                Log.d(this.javaClass.simpleName, e.localizedMessage)
+                LogUtil.e(e.localizedMessage)
             }
         }
         return super.getBody()
