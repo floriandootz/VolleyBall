@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.widget.TextView
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import de.floriandootz.volleyball.parse.Parser
 import de.floriandootz.volleyball.parse.StringParser
 import de.floriandootz.volleyball.request.Requester
 
-class MainActivity : Activity(), Parser<String>, Response.Listener<String>, Response.ErrorListener {
+class MainActivity : Activity(), Response.Listener<String>, Response.ErrorListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,10 +22,6 @@ class MainActivity : Activity(), Parser<String>, Response.Listener<String>, Resp
                 StringParser())
             .setListener(this)
             .send()
-    }
-
-    override fun parse(jsonString: String, headers: Map<String, String>?): String {
-        return jsonString
     }
 
     override fun onResponse(response: String) {

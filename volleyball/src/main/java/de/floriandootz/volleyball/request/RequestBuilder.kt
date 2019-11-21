@@ -24,6 +24,9 @@ class RequestBuilder<T>(
     var errorListener: Response.ErrorListener? = null
         private set
 
+    /**
+     * Default: VolleyRequest.Method.GET
+     */
     fun setMethod(method: Int): RequestBuilder<T> {
         this.method = method
         return this

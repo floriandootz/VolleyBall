@@ -18,7 +18,7 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
     private val ctx: Context
     private var requestQueue: RequestQueue
     private var cachingIsActive = false
-    var headers: Map<String, String>? = null
+    private var headers: Map<String, String>? = null
 
     constructor(ctx: Context, activateCaching: Boolean = false, headers: Map<String, String>?, httpStack: BaseHttpStack?) {
         this.ctx = ctx
@@ -28,37 +28,21 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         requestQueue.addRequestFinishedListener<Any>(this)
     }
 
-    fun <T> request(
-        url: String,
-        customParser: Parser<T>,
-        forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>?,
-        errorListener: Response.ErrorListener?
-    ) {
-        request(VolleyRequest.Method.GET, url, null, forceReloadIfOnline, listener, errorListener, null, customParser)
+    fun <T> build(url: String, parser: Parser<T>): RequestBuilder<T> {
+        return RequestBuilder(this, url, parser)
     }
 
-    fun <T> request(
-        method: Int,
-        url: String,
-        body: String?,
-        customParser: Parser<T>,
-        forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>?,
-        errorListener: Response.ErrorListener?
-    ) {
-        request(method, url, body, forceReloadIfOnline, listener, errorListener, null, customParser)
-    }
-
-    fun <T> request(
-        url: String,
-        customParser: Parser<T>,
-        forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>?,
-        errorListener: Response.ErrorListener?,
-        @RawRes rawFallbackRes: Int
-    ) {
-        request(VolleyRequest.Method.GET, url, null, forceReloadIfOnline, listener, errorListener, rawFallbackRes, customParser)
+    fun <T> send(builder: RequestBuilder<T>) {
+        this.request(
+            builder.method,
+            builder.url,
+            builder.body,
+            builder.doReloadIfOnline,
+            builder.listener,
+            builder.errorListener,
+            builder.resId,
+            builder.parser
+        )
     }
 
     /**
@@ -96,23 +80,6 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             val request: Request<T> = Request(method, url, customParser, body, headers, listener, errorListener)
             requestQueue.add(request)
         }
-    }
-
-    public fun <T> build(url: String, parser: Parser<T>): RequestBuilder<T> {
-        return RequestBuilder(this, url, parser)
-    }
-
-    public fun <T> send(builder: RequestBuilder<T>) {
-        this.request(
-            builder.method,
-            builder.url,
-            builder.body,
-            builder.doReloadIfOnline,
-            builder.listener,
-            builder.errorListener,
-            builder.resId,
-            builder.parser
-        )
     }
 
     override fun onRequestFinished(volleyRequest: VolleyRequest<Any?>) {
