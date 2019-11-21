@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         //noinspection MinSdkTooLow
-        minSdkVersion 9
+        minSdkVersion 8
         targetSdkVersion 28
         versionCode 1
         versionName "1.0-SNAPSHOT"

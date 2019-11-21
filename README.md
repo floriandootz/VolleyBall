@@ -1,6 +1,7 @@
 # VolleyBall
 This library wraps the HTTP library 'Volley' from Google. This is not finished yet, I do not recommend using it in this state.
 
+
 ## Advantages
 - Includes automatic parsing for classes and arrays of classes
 - Provides simple logic for caching
@@ -9,6 +10,9 @@ This library wraps the HTTP library 'Volley' from Google. This is not finished y
 
 ## Disadvantages
 - Expects you to use JSON for requests and responses
+
+## Requirements
+minSdkVersion 8 (same as Volley)
 
 ## Dependencies
 - https://github.com/google/volley
