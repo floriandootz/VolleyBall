@@ -32,10 +32,10 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         url: String,
         customParser: Parser<T>,
         forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>,
-        errorListener: Response.ErrorListener
+        listener: Response.Listener<T>?,
+        errorListener: Response.ErrorListener?
     ) {
-        request(VolleyRequest.Method.GET, url, null, forceReloadIfOnline, listener, errorListener, -1, customParser)
+        request(VolleyRequest.Method.GET, url, null, forceReloadIfOnline, listener, errorListener, null, customParser)
     }
 
     fun <T> request(
@@ -44,18 +44,18 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         body: String?,
         customParser: Parser<T>,
         forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>,
-        errorListener: Response.ErrorListener
+        listener: Response.Listener<T>?,
+        errorListener: Response.ErrorListener?
     ) {
-        request(method, url, body, forceReloadIfOnline, listener, errorListener, -1, customParser)
+        request(method, url, body, forceReloadIfOnline, listener, errorListener, null, customParser)
     }
 
     fun <T> request(
         url: String,
         customParser: Parser<T>,
         forceReloadIfOnline: Boolean,
-        listener: Response.Listener<T>,
-        errorListener: Response.ErrorListener,
+        listener: Response.Listener<T>?,
+        errorListener: Response.ErrorListener?,
         @RawRes rawFallbackRes: Int
     ) {
         request(VolleyRequest.Method.GET, url, null, forceReloadIfOnline, listener, errorListener, rawFallbackRes, customParser)
