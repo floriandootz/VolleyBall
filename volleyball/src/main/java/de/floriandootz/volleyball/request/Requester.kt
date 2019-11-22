@@ -60,10 +60,9 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         }
     }
 
-    override fun onRequestFinished(volleyRequest: VolleyRequest<Any?>) {
+    override fun onRequestFinished(request: VolleyRequest<Any?>) {
         // Should always be true
-        if (volleyRequest is Request) {
-            val request: Request<Any?> = volleyRequest as Request
+        if (request is Request<Any?>) {
             val responseJsonString: String? = request.responseJsonString
             // Request was successful
             if (responseJsonString != null && !request.hasError()) {
@@ -79,9 +78,15 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
                     LogUtil.w("Loading from interwebz failed; Loaded from cache: ${request.url}")
                     request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.parser))
                 }
+                // Fallback to raw-android-resource if set
+                else if (request.rawAndroidResource != null) {
+                    LogUtil.w("Loading from interwebz failed; Using raw-android-resource for: ${request.url}")
+                    val parsedRawRes = CachingUtil.readRawAndroidResource(ctx, request.rawAndroidResource, request.parser)
+                    request.deliverResponse(parsedRawRes)
+                }
                 // Out of options, request fails
                 else {
-                    LogUtil.w("Loading from interwebz failed; No cache available for: ${request.url}")
+                    LogUtil.w("Loading from interwebz failed; No cache or raw-android-resource available for: ${request.url}")
                     request.deliverErrorForReal()
                 }
             }
