@@ -27,7 +27,7 @@ class RequestBuilder<T>(
         private set
     var body: String? = null
         private set
-    var resId: Int? = null
+    var rawAndroidResource: Int? = null
         private set
     var doReloadIfOnline: Boolean = true
         private set
@@ -49,8 +49,8 @@ class RequestBuilder<T>(
         return this
     }
 
-    fun setRawAndroidResource(@RawRes resId: Int): RequestBuilder<T> {
-        this.resId = resId
+    fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
+        this.rawAndroidResource = rawAndroidResource
         return this
     }
 

@@ -4,7 +4,7 @@ This library wraps the HTTP library 'Volley' from Google. This is not finished y
 
 ## Advantages
 - Includes automatic parsing for classes and arrays of classes
-- Provides simple logic for caching
+- Provides easy to use logic for caching
 - Automatically uses the cache if no connection is available instead of waiting for a timout
 - Can also fall back to a local resource file within the APK if no cache is available
 

@@ -1,5 +1,6 @@
 package de.floriandootz.volleyball.request
 
+import android.support.annotation.RawRes
 import android.util.Log
 import com.android.volley.*
 import com.android.volley.Request
@@ -10,12 +11,14 @@ import java.io.UnsupportedEncodingException
 
 class Request<T> : Request<T> {
 
-    private val parser: Parser<T>
     private val listener: Response.Listener<T>?
     private val headers: Map<String, String>?
     private val body: String?
-    private var responseJsonString: String? = null
     private var errorOnHold : VolleyError? = null // Only throw the error when cache can't solve it
+    val parser: Parser<T>
+    @RawRes val rawAndroidResource: Int?
+    var responseJsonString: String? = null
+        private set
 
     constructor(
         method: Int,
@@ -24,7 +27,8 @@ class Request<T> : Request<T> {
         body: String?,
         headers: Map<String, String>?,
         responseListener: Response.Listener<T>?,
-        errorListener: Response.ErrorListener?
+        errorListener: Response.ErrorListener?,
+        @RawRes rawAndroidResource: Int?
     ) : super(
         method,
         url,
@@ -34,6 +38,7 @@ class Request<T> : Request<T> {
         this.listener = responseListener
         this.headers = headers
         this.body = body
+        this.rawAndroidResource = rawAndroidResource
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<T> {
@@ -75,14 +80,6 @@ class Request<T> : Request<T> {
 
     fun deliverErrorForReal() {
         super.deliverError(errorOnHold)
-    }
-
-    fun getResponseJsonString(): String? {
-        return responseJsonString
-    }
-
-    fun getCustomParser(): Parser<T> {
-        return parser
     }
 
     fun hasError(): Boolean {

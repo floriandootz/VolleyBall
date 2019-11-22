@@ -2,6 +2,7 @@ package de.floriandootz.volleyball.request
 
 import android.content.Context
 import com.android.volley.RequestQueue
+import com.android.volley.Request as VolleyRequest
 import com.android.volley.toolbox.BaseHttpStack
 import com.android.volley.toolbox.Volley
 import de.floriandootz.volleyball.parse.Parser
@@ -9,7 +10,6 @@ import de.floriandootz.volleyball.util.CachingUtil
 import de.floriandootz.volleyball.util.CachingUtil.writeCache
 import de.floriandootz.volleyball.util.LogUtil
 import de.floriandootz.volleyball.util.NetworkUtil
-import com.android.volley.Request as VolleyRequest
 
 class Requester : RequestQueue.RequestFinishedListener<Any> {
 
@@ -32,8 +32,8 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
 
     fun <T> send(builder: RequestBuilder<T>) {
         // Load fallback within apk
-        if (!NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, builder.url) && builder.resId != null) {
-            val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, builder.resId!!, builder.parser)
+        if (!NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, builder.url) && builder.rawAndroidResource != null) {
+            val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, builder.rawAndroidResource!!, builder.parser)
             LogUtil.d("Loaded raw-res-fallback: ${builder.url}")
             builder.listener?.onResponse(fallbackResponse)
         }
@@ -46,7 +46,16 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         // Load from API
         else {
             LogUtil.v("Loading from interwebz: ${builder.url}")
-            val request: Request<T> = Request(builder.method, builder.url, builder.parser, builder.body, headers, builder.listener, builder.errorListener)
+            val request: Request<T> = Request(
+                builder.method,
+                builder.url,
+                builder.parser,
+                builder.body,
+                headers,
+                builder.listener,
+                builder.errorListener,
+                builder.rawAndroidResource
+            )
             requestQueue.add(request)
         }
     }
@@ -55,7 +64,7 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         // Should always be true
         if (volleyRequest is Request) {
             val request: Request<Any?> = volleyRequest as Request
-            val responseJsonString: String? = request.getResponseJsonString()
+            val responseJsonString: String? = request.responseJsonString
             // Request was successful
             if (responseJsonString != null && !request.hasError()) {
                 LogUtil.d("Loaded from interwebz: ${request.url}")
@@ -68,7 +77,7 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
                 // Fake successful loading by providing cache if possible
                 if (cachingIsActive && CachingUtil.cacheExists(ctx, request.url)) {
                     LogUtil.w("Loading from interwebz failed; Loaded from cache: ${request.url}")
-                    request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.getCustomParser()))
+                    request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.parser))
                 }
                 // Out of options, request fails
                 else {
