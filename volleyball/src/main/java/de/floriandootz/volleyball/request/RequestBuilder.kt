@@ -27,13 +27,15 @@ class RequestBuilder<T>(
         private set
     var body: String? = null
         private set
-    var rawAndroidResource: Int? = null
-        private set
-    var doReloadIfOnline: Boolean = true
-        private set
     var listener: Response.Listener<T>? = null
         private set
     var errorListener: Response.ErrorListener? = null
+        private set
+    var requestStrategy: RequestStrategy = RequestStrategy.ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE
+        private set
+    var rawAndroidResource: Int? = null
+        private set
+    var doReloadIfOnline: Boolean = true
         private set
 
     /**
@@ -49,16 +51,6 @@ class RequestBuilder<T>(
         return this
     }
 
-    fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
-        this.rawAndroidResource = rawAndroidResource
-        return this
-    }
-
-    fun setDoReloadIfOnline(doReloadIfOnline: Boolean): RequestBuilder<T> {
-        this.doReloadIfOnline = doReloadIfOnline
-        return this
-    }
-
     fun setListener(listener: Response.Listener<T>): RequestBuilder<T> {
         this.listener = listener
         return this
@@ -66,6 +58,21 @@ class RequestBuilder<T>(
 
     fun setErrorListener(errorListener: Response.ErrorListener): RequestBuilder<T> {
         this.errorListener = errorListener
+        return this
+    }
+
+    fun setRequestStrategy(requestStrategy: RequestStrategy): RequestBuilder<T> {
+        this.requestStrategy = requestStrategy
+        return this
+    }
+
+    fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
+        this.rawAndroidResource = rawAndroidResource
+        return this
+    }
+
+    fun setDoReloadIfOnline(doReloadIfOnline: Boolean): RequestBuilder<T> {
+        this.doReloadIfOnline = doReloadIfOnline
         return this
     }
 
