@@ -30,19 +30,23 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
 
     fun <T> send(builder: RequestBuilder<T>) {
         // Load fallback within apk
-        if (builder.requestStrategy != RequestStrategy.ONLINE && !NetworkUtil.isNetworkAvailable(ctx) && !CachingUtil.cacheExists(ctx, builder.url) && builder.rawAndroidResource != null) {
+        if (builder.requestStrategy.allowResource() &&
+            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline()) &&
+            !CachingUtil.cacheExists(ctx, builder.url) && builder.rawAndroidResource != null) {
             val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, builder.rawAndroidResource!!, builder.parser)
             LogUtil.d("Loaded raw-res-fallback: ${builder.url}")
             builder.listener?.onResponse(fallbackResponse)
         }
         // Load from cache
-        else if (builder.requestStrategy != RequestStrategy.ONLINE && (!builder.doReloadIfOnline || !NetworkUtil.isNetworkAvailable(ctx)) && CachingUtil.cacheExists(ctx, builder.url)) {
+        else if (builder.requestStrategy.allowCache() &&
+            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline()) &&
+            CachingUtil.cacheExists(ctx, builder.url)) {
             val cachedResponse: T? = CachingUtil.readCache(ctx, builder.url, builder.parser)
             LogUtil.d("Loaded from cache: ${builder.url}")
             builder.listener?.onResponse(cachedResponse)
         }
         // Load from API
-        else {
+        else if (builder.requestStrategy.allowOnline()) {
             LogUtil.v("Loading from interwebz: ${builder.url}")
             val request: Request<T> = Request(
                 builder.method,
@@ -55,9 +59,12 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
                 builder.requestStrategy,
                 builder.rawAndroidResource
             )
-            if (builder.requestStrategy == RequestStrategy.ONLINE)
+            if (builder.requestStrategy.allowCache())
                 request.setShouldCache(false)
             requestQueue.add(request)
+        }
+        else {
+            // TODO: Error, Request-Strategy not executable (e.g. strategy = online but no network available)
         }
     }
 
@@ -73,12 +80,12 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             // No connection, timeout, server offline etc...
             } else {
                 // Fake successful loading by providing cache if possible
-                if (request.requestStrategy != RequestStrategy.ONLINE && CachingUtil.cacheExists(ctx, request.url)) {
+                if (request.requestStrategy.allowCache() && CachingUtil.cacheExists(ctx, request.url)) {
                     LogUtil.w("Loading from interwebz failed; Loaded from cache: ${request.url}")
                     request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.parser))
                 }
                 // Fallback to raw-android-resource if set
-                else if (request.requestStrategy != RequestStrategy.ONLINE && request.rawAndroidResource != null) {
+                else if (request.requestStrategy.allowResource() && request.rawAndroidResource != null) {
                     LogUtil.w("Loading from interwebz failed; Using raw-android-resource for: ${request.url}")
                     val parsedRawRes = CachingUtil.readRawAndroidResource(ctx, request.rawAndroidResource, request.parser)
                     request.deliverResponse(parsedRawRes)

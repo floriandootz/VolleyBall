@@ -35,8 +35,6 @@ class RequestBuilder<T>(
         private set
     var rawAndroidResource: Int? = null
         private set
-    var doReloadIfOnline: Boolean = true
-        private set
 
     /**
      * Default: VolleyRequest.Method.GET
@@ -68,11 +66,6 @@ class RequestBuilder<T>(
 
     fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
         this.rawAndroidResource = rawAndroidResource
-        return this
-    }
-
-    fun setDoReloadIfOnline(doReloadIfOnline: Boolean): RequestBuilder<T> {
-        this.doReloadIfOnline = doReloadIfOnline
         return this
     }
 

@@ -21,5 +21,18 @@ enum class RequestStrategy {
      * First returns offline-data via fallback chain: cache -> raw-android-resource
      * Then loads and returns online-data
      */
-    CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE
+    CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE;
+
+    fun allowCache(): Boolean {
+        return this != ONLINE
+    }
+
+    fun allowResource(): Boolean {
+        return this != ONLINE
+    }
+
+    fun allowOnline(): Boolean {
+        return this == ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE || this == ONLINE
+    }
+
 }
