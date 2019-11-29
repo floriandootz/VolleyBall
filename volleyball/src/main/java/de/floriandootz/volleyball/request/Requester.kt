@@ -15,13 +15,11 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
 
     private val ctx: Context
     private var requestQueue: RequestQueue
-    private var cachingIsActive = false
     private var headers: Map<String, String>? = null
 
-    constructor(ctx: Context, activateCaching: Boolean = false, headers: Map<String, String>?, httpStack: BaseHttpStack?) {
+    constructor(ctx: Context, headers: Map<String, String>?, httpStack: BaseHttpStack?) {
         this.ctx = ctx
         this.headers = headers
-        cachingIsActive = activateCaching
         requestQueue = Volley.newRequestQueue(ctx, httpStack)
         requestQueue.addRequestFinishedListener<Any>(this)
     }
@@ -38,7 +36,7 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             builder.listener?.onResponse(fallbackResponse)
         }
         // Load from cache
-        else if (builder.requestStrategy != RequestStrategy.ONLINE && cachingIsActive && (!builder.doReloadIfOnline || !NetworkUtil.isNetworkAvailable(ctx)) && CachingUtil.cacheExists(ctx, builder.url)) {
+        else if (builder.requestStrategy != RequestStrategy.ONLINE && (!builder.doReloadIfOnline || !NetworkUtil.isNetworkAvailable(ctx)) && CachingUtil.cacheExists(ctx, builder.url)) {
             val cachedResponse: T? = CachingUtil.readCache(ctx, builder.url, builder.parser)
             LogUtil.d("Loaded from cache: ${builder.url}")
             builder.listener?.onResponse(cachedResponse)
@@ -70,14 +68,12 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             // Request was successful
             if (responseJsonString != null && !request.hasError()) {
                 LogUtil.d("Loaded from interwebz: ${request.url}")
-                if (cachingIsActive) {
-                    writeCache(ctx, responseJsonString, request.url)
-                    //SharedPreferencesManager.writeFileTimestamp(ctx, request.getUrl(), System.currentTimeMillis());
-                }
+                writeCache(ctx, responseJsonString, request.url)
+                //SharedPreferencesManager.writeFileTimestamp(ctx, request.getUrl(), System.currentTimeMillis());
             // No connection, timeout, server offline etc...
             } else {
                 // Fake successful loading by providing cache if possible
-                if (request.requestStrategy != RequestStrategy.ONLINE && cachingIsActive && CachingUtil.cacheExists(ctx, request.url)) {
+                if (request.requestStrategy != RequestStrategy.ONLINE && CachingUtil.cacheExists(ctx, request.url)) {
                     LogUtil.w("Loading from interwebz failed; Loaded from cache: ${request.url}")
                     request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.parser))
                 }

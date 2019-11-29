@@ -15,14 +15,14 @@ class MainActivity : Activity(), Response.Listener<String>, Response.ErrorListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val requester = Requester(this, true, null, null)
+        val requester = Requester(this, null, null)
 
         requester
             .build(
                 "https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap",
                 StringParser())
             .setListener(this)
-            .setRequestStrategy(RequestStrategy.ONLINE)
+//            .setRequestStrategy(RequestStrategy.ONLINE)
             .send()
     }
 
