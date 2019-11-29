@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException
 
 class Request<T> : Request<T> {
 
+    val requestStrategy: RequestStrategy
     private val listener: Response.Listener<T>?
     private val headers: Map<String, String>?
     private val body: String?
@@ -28,6 +29,7 @@ class Request<T> : Request<T> {
         headers: Map<String, String>?,
         responseListener: Response.Listener<T>?,
         errorListener: Response.ErrorListener?,
+        requestStrategy: RequestStrategy,
         @RawRes rawAndroidResource: Int?
     ) : super(
         method,
@@ -38,6 +40,7 @@ class Request<T> : Request<T> {
         this.listener = responseListener
         this.headers = headers
         this.body = body
+        this.requestStrategy = requestStrategy
         this.rawAndroidResource = rawAndroidResource
     }
 
@@ -60,6 +63,10 @@ class Request<T> : Request<T> {
 
     override fun deliverError(error: VolleyError?) {
         errorOnHold = error
+
+        // Directly deliver the error, if no fallback is defined
+        if (requestStrategy == RequestStrategy.ONLINE)
+            deliverErrorForReal()
     }
 
     override fun getBodyContentType(): String? {

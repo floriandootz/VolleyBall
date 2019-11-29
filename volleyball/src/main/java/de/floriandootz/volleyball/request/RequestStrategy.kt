@@ -7,7 +7,7 @@ enum class RequestStrategy {
     ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE,
 
     /**
-     * Fallback chain offline: cache -> raw-android-resource
+     * Fallback chain offline only: cache -> raw-android-resource
      */
     CACHE_FALLBACK_RESOURCE,
 
