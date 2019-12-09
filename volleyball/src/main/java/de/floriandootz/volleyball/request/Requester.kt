@@ -24,29 +24,41 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
         requestQueue.addRequestFinishedListener<Any>(this)
     }
 
+    /**
+     * Primary function for using volleyball. Use this to create and send a new request.
+     */
     fun <T> build(url: String, parser: Parser<T>): RequestBuilder<T> {
         return RequestBuilder(this, url, parser)
     }
 
+    /**
+     * It is not recommended to use this. Instead use: .build().send()
+     */
     fun <T> send(builder: RequestBuilder<T>) {
+        var pathFoundForRequestStrategy = false
+
         // Load fallback within apk
         if (builder.requestStrategy.allowResource() &&
-            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline()) &&
+            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline() || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE) &&
             !CachingUtil.cacheExists(ctx, builder.url) && builder.rawAndroidResource != null) {
             val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, builder.rawAndroidResource!!, builder.parser)
             LogUtil.d("Loaded raw-res-fallback: ${builder.url}")
             builder.listener?.onResponse(fallbackResponse)
+            pathFoundForRequestStrategy = true
         }
         // Load from cache
         else if (builder.requestStrategy.allowCache() &&
-            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline()) &&
+            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline() || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE) &&
             CachingUtil.cacheExists(ctx, builder.url)) {
             val cachedResponse: T? = CachingUtil.readCache(ctx, builder.url, builder.parser)
             LogUtil.d("Loaded from cache: ${builder.url}")
             builder.listener?.onResponse(cachedResponse)
+            pathFoundForRequestStrategy = true
         }
+
         // Load from API
-        else if (builder.requestStrategy.allowOnline()) {
+        if (builder.requestStrategy.allowOnline() &&
+            (!pathFoundForRequestStrategy || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE)) {
             LogUtil.v("Loading from interwebz: ${builder.url}")
             val request: Request<T> = Request(
                 builder.method,
@@ -62,12 +74,17 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             if (builder.requestStrategy.allowCache())
                 request.setShouldCache(false)
             requestQueue.add(request)
+            pathFoundForRequestStrategy = true
         }
-        else {
-            // TODO: Error, Request-Strategy not executable (e.g. strategy = online but no network available)
+
+        if (!pathFoundForRequestStrategy) {
+            LogUtil.d("No way found to retrieve the content for request-strategy. Example: Strategy set to only use cache, but cache not available.")
         }
     }
 
+    /**
+     * Internal function. Do not use.
+     */
     override fun onRequestFinished(request: VolleyRequest<Any?>) {
         // Should always be true
         if (request is Request<Any?>) {

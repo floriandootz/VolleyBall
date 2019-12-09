@@ -32,7 +32,7 @@ enum class RequestStrategy {
     }
 
     fun allowOnline(): Boolean {
-        return this == ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE || this == ONLINE
+        return this != CACHE_FALLBACK_RESOURCE
     }
 
 }

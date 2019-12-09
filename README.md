@@ -9,7 +9,7 @@ This library wraps the HTTP library 'Volley' from Google. This is not finished y
 - Can also fall back to a local resource file within the APK if no cache is available
 
 ## Disadvantages
-- Expects you to use JSON for requests and responses
+- Only parses JSON responses
 
 ## Requirements
 minSdkVersion 8 (same as Volley)

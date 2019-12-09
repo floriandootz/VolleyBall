@@ -9,13 +9,10 @@ import com.android.volley.Request as VolleyRequest
  * Builds a request and executes it with the @Requester when .send() is called.
  *
  * @param url The url to request
- * @param clazz The class to parse the answer into. Alternatively you can supply a @customParser.
- * @param forceReloadIfOnline If true, the cached data will be returned if online.
  * @param listener The callback for the parsed result data.
  * @param errorListener The callback for any (http, parsing, ...) error.
  * @param rawFallbackRes The resource contained in the APK to be loaded if offline and no cache available. Useful for first starts of the application.
  * @param customParser A custom parser instead of @clazz.
- * @param <T> The class you are parsing to.
  */
 class RequestBuilder<T>(
         private val requester: Requester,
@@ -59,6 +56,9 @@ class RequestBuilder<T>(
         return this
     }
 
+    /**
+     * Default: RequestStrategy.ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE
+     */
     fun setRequestStrategy(requestStrategy: RequestStrategy): RequestBuilder<T> {
         this.requestStrategy = requestStrategy
         return this
