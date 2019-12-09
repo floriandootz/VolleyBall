@@ -6,13 +6,12 @@ import de.floriandootz.volleyball.parse.Parser
 import com.android.volley.Request as VolleyRequest
 
 /**
- * Builds a request and executes it with the @Requester when .send() is called.
+ * Don't construct yourself. Instead use: Requester.build()
+ * Builds a request and executes it with the Requester when .send() is called.
  *
+ * @requester The requester this request was build and will be sent with.
  * @param url The url to request
- * @param listener The callback for the parsed result data.
- * @param errorListener The callback for any (http, parsing, ...) error.
- * @param rawFallbackRes The resource contained in the APK to be loaded if offline and no cache available. Useful for first starts of the application.
- * @param customParser A custom parser instead of @clazz.
+ * @param parser Either a custom parser or a parser from the volley-ball-library.
  */
 class RequestBuilder<T>(
         private val requester: Requester,
@@ -41,16 +40,25 @@ class RequestBuilder<T>(
         return this
     }
 
+    /**
+     * The body added to the request.
+     */
     fun setBody(body: String): RequestBuilder<T> {
         this.body = body
         return this
     }
 
+    /**
+     * The callback for the parsed result data.
+     */
     fun setListener(listener: Response.Listener<T>): RequestBuilder<T> {
         this.listener = listener
         return this
     }
 
+    /**
+     * The callback for any (http, parsing, ...) error.
+     */
     fun setErrorListener(errorListener: Response.ErrorListener): RequestBuilder<T> {
         this.errorListener = errorListener
         return this
@@ -64,11 +72,17 @@ class RequestBuilder<T>(
         return this
     }
 
+    /**
+     * The resource contained in the APK to be loaded if offline and no cache available. Useful for first starts of the application.
+     */
     fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
         this.rawAndroidResource = rawAndroidResource
         return this
     }
 
+    /**
+     * Sends the built request via the requester.
+     */
     fun send() {
         requester.send(this)
     }
