@@ -1,5 +1,5 @@
 # VolleyBall
-This library wraps the HTTP library 'Volley' from Google. This is not finished yet, I do not recommend using it in this state.
+This library wraps the HTTP library 'Volley' from Google. The library is not well tested yet and subject to breaking changes. Use at own risk in this stage.
 
 
 ## Advantages
@@ -13,6 +13,24 @@ This library wraps the HTTP library 'Volley' from Google. This is not finished y
 
 ## Requirements
 minSdkVersion 8 (same as Volley)
+
+## Use
+You can add the library to your project via _jitpack_ by adding the repository to your root gradle-file
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+And the dependency to your module
+```
+dependencies {
+    ...
+    implementation 'com.github.floriandootz:volleyball:0.1'
+}
+```
 
 ## Dependencies
 - https://github.com/google/volley
