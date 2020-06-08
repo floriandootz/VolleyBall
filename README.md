@@ -14,7 +14,7 @@ This library wraps the HTTP library 'Volley' from Google. The library is not wel
 ## Requirements
 minSdkVersion 8 (same as Volley)
 
-## Use
+## Usage
 You can add the library to your project via _jitpack_ by adding the repository to your root gradle-file
 ```
 allprojects {

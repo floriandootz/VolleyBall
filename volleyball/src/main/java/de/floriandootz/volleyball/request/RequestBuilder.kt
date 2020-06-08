@@ -11,7 +11,13 @@ import com.android.volley.Request as VolleyRequest
  *
  * @requester The requester this request was build and will be sent with.
  * @param url The url to request
- * @param parser Either a custom parser or a parser from the volley-ball-library.
+ * @param parser Either a custom parser by implementing {@link Parser} or a parser from the volleyball-library:
+ * - ClassParser
+ * - ArrayParser
+ * - StringParser
+ * - VoidParser
+ *
+ * @see Requester
  */
 class RequestBuilder<T>(
         private val requester: Requester,

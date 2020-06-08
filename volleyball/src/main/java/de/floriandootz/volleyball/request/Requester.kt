@@ -26,6 +26,12 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
 
     /**
      * Primary function for using volleyball. Use this to create and send a new request.
+     * @param url The url to request
+     * @param parser Either a custom parser by implementing {@link Parser} or a parser from the volleyball-library:
+     * - ClassParser
+     * - ArrayParser
+     * - StringParser
+     * - VoidParser
      */
     fun <T> build(url: String, parser: Parser<T>): RequestBuilder<T> {
         return RequestBuilder(this, url, parser)
