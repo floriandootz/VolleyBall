@@ -9,16 +9,6 @@ import com.android.volley.Request as VolleyRequest
 /**
  * Don't construct yourself. Instead use: Requester.build()
  * Builds a request and executes it with the Requester when .send() is called.
- *
- * @requester The requester this request was build and will be sent with.
- * @param url The url to request
- * @param parser Either a custom parser by implementing {@link Parser} or a parser from the volleyball-library:
- * - ClassParser
- * - ArrayParser
- * - StringParser
- * - VoidParser
- *
- * @see Requester
  */
 class RequestBuilder<T> {
 
@@ -42,6 +32,20 @@ class RequestBuilder<T> {
     var rawAndroidResource: Int? = null
         private set
 
+    /**
+     * Don't construct yourself. Instead use: Requester.build()
+     * Builds a request and executes it with the Requester when .send() is called.
+     *
+     * @requester The requester this request was build and will be sent with.
+     * @param url The url to request
+     * @param parser Either a custom parser by implementing {@link Parser} or a parser from the volleyball-library:
+     * - ClassParser
+     * - ArrayParser
+     * - StringParser
+     * - VoidParser
+     *
+     * @see Requester
+     */
     constructor(requester: Requester, url: String, parser: Parser<T>) {
         this.requester = requester
         this.uri = Uri.parse(url).buildUpon()
