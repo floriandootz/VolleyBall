@@ -49,7 +49,7 @@ class RequestBuilder<T>(
     /**
      * The body added to the request.
      */
-    fun setBody(body: String): RequestBuilder<T> {
+    fun setBody(body: String?): RequestBuilder<T> {
         this.body = body
         return this
     }
@@ -57,7 +57,7 @@ class RequestBuilder<T>(
     /**
      * The callback for the parsed result data.
      */
-    fun setListener(listener: Response.Listener<T>): RequestBuilder<T> {
+    fun setListener(listener: Response.Listener<T>?): RequestBuilder<T> {
         this.listener = listener
         return this
     }
@@ -65,7 +65,7 @@ class RequestBuilder<T>(
     /**
      * The callback for any (http, parsing, ...) error.
      */
-    fun setErrorListener(errorListener: Response.ErrorListener): RequestBuilder<T> {
+    fun setErrorListener(errorListener: Response.ErrorListener?): RequestBuilder<T> {
         this.errorListener = errorListener
         return this
     }
