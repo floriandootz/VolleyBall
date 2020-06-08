@@ -1,5 +1,6 @@
 package de.floriandootz.volleyball.request
 
+import android.net.Uri
 import android.support.annotation.RawRes
 import com.android.volley.Response
 import de.floriandootz.volleyball.parse.Parser
@@ -19,11 +20,14 @@ import com.android.volley.Request as VolleyRequest
  *
  * @see Requester
  */
-class RequestBuilder<T>(
-        private val requester: Requester,
-        public val url: String,
-        public val parser: Parser<T>
-) {
+class RequestBuilder<T> {
+
+    private val requester: Requester
+    private val uri: Uri.Builder
+
+    val parser: Parser<T>
+    val url: String
+        get() = uri.build().toString()
 
     var method: Int = VolleyRequest.Method.GET
         private set
@@ -37,6 +41,12 @@ class RequestBuilder<T>(
         private set
     var rawAndroidResource: Int? = null
         private set
+
+    constructor(requester: Requester, url: String, parser: Parser<T>) {
+        this.requester = requester
+        this.uri = Uri.parse(url).buildUpon()
+        this.parser = parser
+    }
 
     /**
      * Default: VolleyRequest.Method.GET
@@ -83,6 +93,14 @@ class RequestBuilder<T>(
      */
     fun setRawAndroidResource(@RawRes rawAndroidResource: Int): RequestBuilder<T> {
         this.rawAndroidResource = rawAndroidResource
+        return this
+    }
+
+    /**
+     * Appends a query parameter to the url.
+     */
+    fun appendQueryParameter(key: String, value: String): RequestBuilder<T> {
+        uri.appendQueryParameter(key, value)
         return this
     }
 
