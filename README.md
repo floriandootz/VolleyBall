@@ -28,7 +28,7 @@ And the dependency to your module
 ```
 dependencies {
     ...
-    implementation 'com.github.floriandootz:volleyball:0.1'
+    implementation 'com.github.floriandootz:volleyball:0.2'
 }
 ```
 
