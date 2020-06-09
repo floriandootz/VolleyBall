@@ -12,6 +12,8 @@ import java.io.UnsupportedEncodingException
 class Request<T> : Request<T> {
 
     val requestStrategy: RequestStrategy
+    var volleyCacheUsed : Boolean = true
+        private set
     private val listener: Response.Listener<T>?
     private val headers: Map<String, String>?
     private val body: String?
@@ -83,6 +85,14 @@ class Request<T> : Request<T> {
             }
         }
         return super.getBody()
+    }
+
+    override fun addMarker(tag: String?) {
+        super.addMarker(tag)
+
+        if (tag.equals("network-http-complete")) {
+            volleyCacheUsed = false;
+        }
     }
 
     fun deliverErrorForReal() {
