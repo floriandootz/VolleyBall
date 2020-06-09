@@ -27,7 +27,7 @@ class RequestBuilder<T> {
         private set
     var errorListener: Response.ErrorListener? = null
         private set
-    var requestStrategy: RequestStrategy = RequestStrategy.ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE
+    var requestStrategy: RequestStrategy = RequestStrategy.VOLLEY_DEFAULT
         private set
     var rawAndroidResource: Int? = null
         private set
@@ -85,7 +85,7 @@ class RequestBuilder<T> {
     }
 
     /**
-     * Default: RequestStrategy.ONLINE_FALLBACK_CACHE_FALLBACK_RESOURCE
+     * Default: RequestStrategy.VOLLEY_DEFAULT
      */
     fun setRequestStrategy(requestStrategy: RequestStrategy): RequestBuilder<T> {
         this.requestStrategy = requestStrategy
