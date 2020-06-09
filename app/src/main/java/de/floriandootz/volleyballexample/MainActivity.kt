@@ -19,10 +19,12 @@ class MainActivity : Activity(), Response.Listener<String>, Response.ErrorListen
 
         requester
             .build(
-                "https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap",
-                StringParser())
+                "https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i",
+                StringParser()
+            )
             .setListener(this)
             .setRequestStrategy(RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE)
+            .appendQueryParameter("display", "swap")
             .send()
     }
 
