@@ -12,9 +12,14 @@ enum class RequestStrategy {
     CACHE_FALLBACK_RESOURCE,
 
     /**
-     * Only load online, no fallbacks
+     * Only load online, no fallbacks, disable volley-caching.
      */
     ONLINE,
+
+    /**
+     * Use volley-caching as is. Do not disable it and don't do own caching.
+     */
+    VOLLEY_DEFAULT,
 
     /**
      * Combines online and offline for a fast response time in the UI.
@@ -25,6 +30,10 @@ enum class RequestStrategy {
 
     fun allowCache(): Boolean {
         return this != ONLINE
+    }
+
+    fun allowVolleyballCache(): Boolean {
+        return this != ONLINE && this != VOLLEY_DEFAULT
     }
 
     fun allowResource(): Boolean {

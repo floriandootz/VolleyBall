@@ -77,8 +77,9 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
                 builder.requestStrategy,
                 builder.rawAndroidResource
             )
-            if (builder.requestStrategy.allowCache())
+            if (!builder.requestStrategy.allowCache()) {
                 request.setShouldCache(false)
+            }
             requestQueue.add(request)
             pathFoundForRequestStrategy = true
         }
@@ -98,12 +99,14 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
             // Request was successful
             if (responseJsonString != null && !request.hasError()) {
                 LogUtil.d("Loaded from interwebz: ${request.url}")
-                writeCache(ctx, responseJsonString, request.url)
+                if (request.requestStrategy.allowVolleyballCache()) {
+                    writeCache(ctx, responseJsonString, request.url)
+                }
                 //SharedPreferencesManager.writeFileTimestamp(ctx, request.getUrl(), System.currentTimeMillis());
             // No connection, timeout, server offline etc...
             } else {
                 // Fake successful loading by providing cache if possible
-                if (request.requestStrategy.allowCache() && CachingUtil.cacheExists(ctx, request.url)) {
+                if (request.requestStrategy.allowVolleyballCache() && CachingUtil.cacheExists(ctx, request.url)) {
                     LogUtil.w("Loading from interwebz failed; Loaded from cache: ${request.url}")
                     request.deliverResponse(CachingUtil.readCache(ctx, request.url, request.parser))
                 }
