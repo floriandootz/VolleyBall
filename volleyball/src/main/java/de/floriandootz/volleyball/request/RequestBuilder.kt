@@ -27,7 +27,7 @@ class RequestBuilder<T> {
         private set
     var errorListener: Response.ErrorListener? = null
         private set
-    var requestStrategy: RequestStrategy = RequestStrategy.VOLLEY_DEFAULT
+    var requestStrategy: RequestStrategy = RequestStrategy.VOLLEY_DEFAULT_FALLBACK_RESOURCE
         private set
     var rawAndroidResource: Int? = null
         private set
