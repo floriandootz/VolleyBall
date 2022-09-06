@@ -43,22 +43,22 @@ class Requester : RequestQueue.RequestFinishedListener<Any> {
     fun <T> send(builder: RequestBuilder<T>) {
         var pathFoundForRequestStrategy = false
 
-        // Load from cache
-        if (builder.requestStrategy.allowCache() &&
-            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline() || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE) &&
-            CachingUtil.cacheExists(ctx, builder.url)) {
-            val cachedResponse: T? = CachingUtil.readCache(ctx, builder.url, builder.parser)
-            LogUtil.d("Loaded from cache: ${builder.url}")
-            builder.listener?.onResponse(cachedResponse)
-            pathFoundForRequestStrategy = true
-        }
         // Load fallback within apk
-        else if (builder.requestStrategy.allowResource() &&
+        if (builder.requestStrategy.allowResource() &&
             (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline() || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE) &&
             !CachingUtil.cacheExists(ctx, builder.url) && builder.rawAndroidResource != null) {
             val fallbackResponse: T = CachingUtil.readRawAndroidResource(ctx, builder.rawAndroidResource!!, builder.parser)
             LogUtil.d("Loaded raw-res-fallback: ${builder.url}")
             builder.listener?.onResponse(fallbackResponse)
+            pathFoundForRequestStrategy = true
+        }
+        // Load from cache
+        else if (builder.requestStrategy.allowCache() &&
+            (!NetworkUtil.isNetworkAvailable(ctx) || !builder.requestStrategy.allowOnline() || builder.requestStrategy == RequestStrategy.CACHE_FALLBACK_RESOURCE_AFTERWARDS_ONLINE) &&
+            CachingUtil.cacheExists(ctx, builder.url)) {
+            val cachedResponse: T? = CachingUtil.readCache(ctx, builder.url, builder.parser)
+            LogUtil.d("Loaded from cache: ${builder.url}")
+            builder.listener?.onResponse(cachedResponse)
             pathFoundForRequestStrategy = true
         }
 
