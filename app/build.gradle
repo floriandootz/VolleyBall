@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "de.floriandootz.volleyballexample"
         //noinspection MinSdkTooLow
@@ -20,6 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'de.floriandootz.volleyballexample'
 }
 
 dependencies {
